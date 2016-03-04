@@ -70,8 +70,8 @@ node ("linux") {
 
 }
 
-stage concurrency: 1, name: 'Perform NFT'
-checkpoint 'Starting NFT'
+stage concurrency: 1, name: 'Perform Tests'
+checkpoint 'Starting Tests'
 performNFT()
 
 input 'Kill running servers?'
