@@ -135,12 +135,12 @@ def deploy(longapp, revision) {
     def apiport=hostConfigPorts["mobile-deposit-api"]
 
     node ("linux") {
-        log ("Deploy", """Perform the deploy steps here for app: $app:$revision
-eg call sh /scripts/$app/deploy nft $revision""")
+        log ("Deploy", "Deploying: $app:$revision")
         def splitstr = revision.split( "-")
         build = splitstr[splitstr.length-1]
         echo "build = $build"
         dir('artifacts') {
+            log ("Deploy", "Copying: $longapp")
             step([$class: 'CopyArtifact', projectName: "${longapp}", selector: [$class: 'SpecificBuildSelector', buildNumber: build]])
             sh "ls -l"
             sh "java -jar target/${app}-${revision}.jar --server.port=$port --api.port=${apiport} 2>/dev/null 1>myfile.log & echo \$! > pid"
