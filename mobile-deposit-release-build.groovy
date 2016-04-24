@@ -132,11 +132,11 @@ def decom(longapp, revision) {
 }
 
 def deploy(longapp, revision) {
-    node ("linux") {
-        def app=longapp.minus(branch)
-        def port=hostConfigPorts[app]
-        def apiport=hostConfigPorts["mobile-deposit-api"]
+    def app=longapp.minus(branch)
+    def port=hostConfigPorts[app]
+    def apiport=hostConfigPorts["mobile-deposit-api"]
 
+    node ("linux") {
         log ("Deploy", "Deploying: $app:$revision")
         def splitstr = revision.split( "-")
         def build = splitstr[splitstr.length-1]
