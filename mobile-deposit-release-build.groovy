@@ -63,11 +63,13 @@ node ("linux") {
         }
         parallel branches
     }
+    
+node ("linux") {    
     writePropertiesFile(requiredVersions, "manifest")
     archive 'manifest'
     writePropertiesFile(updatedVersions, "updates")
     archive 'updates'
-
+}
 
 
 stage concurrency: 1, name: 'Perform Tests'
