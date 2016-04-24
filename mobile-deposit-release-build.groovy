@@ -137,7 +137,7 @@ def deploy(longapp, revision) {
 
         log ("Deploy", "Deploying: $app:$revision")
         def splitstr = revision.split( "-")
-        build = splitstr[splitstr.length-1]
+        def build = splitstr[splitstr.length-1]
         echo "build = $build"
         dir('artifacts') {
             log ("Deploy", "Copying: $longapp : $build")
