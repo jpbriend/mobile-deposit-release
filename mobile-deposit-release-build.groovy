@@ -6,7 +6,7 @@
 
 sleepDuration=1
 def productName='mobile-deposit'
-def manifestLocation="$productName-update-release-manifest"
+def manifestLocation="${productName}-update-release-manifest"
 def manifestFileName='manifest'
 branch="/qcon"
 
@@ -45,7 +45,7 @@ node ("linux") {
     //appsToUpdate=updatedVersions.stringPropertyNames().toArray()
     
     appsToUpdate=requiredVersions.stringPropertyNames().toArray()
-    
+}    
     stage name: 'Updating Apps'
     checkpoint 'Starting App Update'
 
@@ -68,7 +68,7 @@ node ("linux") {
     writePropertiesFile(updatedVersions, "updates")
     archive 'updates'
 
-}
+
 
 stage concurrency: 1, name: 'Perform Tests'
 checkpoint 'Starting Tests'
