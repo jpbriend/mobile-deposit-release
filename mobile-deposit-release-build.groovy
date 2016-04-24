@@ -130,17 +130,17 @@ def decom(longapp, revision) {
 }
 
 def deploy(longapp, revision) {
-    def app=longapp.minus(branch)
-    def port=hostConfigPorts[app]
-    def apiport=hostConfigPorts["mobile-deposit-api"]
-
     node ("linux") {
+        def app=longapp.minus(branch)
+        def port=hostConfigPorts[app]
+        def apiport=hostConfigPorts["mobile-deposit-api"]
+
         log ("Deploy", "Deploying: $app:$revision")
         def splitstr = revision.split( "-")
         build = splitstr[splitstr.length-1]
         echo "build = $build"
         dir('artifacts') {
-            log ("Deploy", "Copying: $longapp")
+            log ("Deploy", "Copying: $longapp : $build")
             step([$class: 'CopyArtifact', projectName: "${longapp}", selector: [$class: 'SpecificBuildSelector', buildNumber: build]])
             sh "ls -l"
             sh "java -jar target/${app}-${revision}.jar --server.port=$port --api.port=${apiport} 2>/dev/null 1>myfile.log & echo \$! > pid"
