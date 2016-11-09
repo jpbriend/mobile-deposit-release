@@ -11,29 +11,29 @@ if (revision=="") {
 log "Received update", "$app:$revision"
 
 node("linux") {
-    stage name: 'Reading Manifest'
-    try {
-        step([$class: 'CopyArtifact', filter: 'manifest', projectName:env.JOB_NAME, selector: [$class: 'StatusBuildSelector', stable: false]])
-        versions = readPropertiesFromFile ("manifest")
-    } catch (Exception e) {
-        echo e.toString()
-        versions = new Properties()
+    stage('Reading Manifest') {
+        try {
+            step([$class: 'CopyArtifact', filter: 'manifest', projectName:env.JOB_NAME, selector: [$class: 'StatusBuildSelector', stable: false]])
+            versions = readPropertiesFromFile ("manifest")
+        } catch (Exception e) {
+            echo e.toString()
+            versions = new Properties()
+        }
+    }
+    stage('Merging Manifest') {
+        versions[app]=revision
     }
 
-
-
-    stage name: 'Merging Manifest'
-    versions[app]=revision
-
-    stage name: 'Writing Manifest'
-    writePropertiesFile(versions, "manifest")
-    archive 'manifest'
+    stage('Writing Manifest') {
+        writePropertiesFile(versions, "manifest")
+        archive 'manifest'
+    }
 }
 
-stage name: 'Triggering Release Build'
-
-log "Trigger build", "Triggering a new build"
-build job: downstreamJob, propagate: false, wait: false
+stage('Triggering Release Build') {
+    log "Trigger build", "Triggering a new build"
+    build job: downstreamJob, propagate: false, wait: false
+}
 
 
 def writePropertiesFile(props, file) {
