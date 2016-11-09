@@ -12,6 +12,7 @@ if (revision=="") {
 
 node("linux") {
     stage('Reading Manifest') {
+        sh "echo 'reading manifest as an artifact'"
         try {
             step([$class: 'CopyArtifact', filter: 'manifest', projectName:env.JOB_NAME, selector: [$class: 'StatusBuildSelector', stable: false]])
             versions = readPropertiesFromFile ("manifest")
