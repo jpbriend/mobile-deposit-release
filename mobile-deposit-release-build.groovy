@@ -73,15 +73,18 @@ stage('Updating Apps') {
 }
 
 
-stage concurrency: 1, name: 'Perform Tests'
-performNFT()
+stage('Perform Tests') {
+    lock('deployToProd') {
+        performNFT()
 
-input 'Kill running servers?'
+        input 'Kill running servers?'
 
-node("linux") {
-    for (i=0; i < pids.size(); i++) {
-        def pid=pids[i]
-        sh "kill $pid"
+        node("linux") {
+            for (i=0; i < pids.size(); i++) {
+                def pid=pids[i]
+                sh "kill $pid"
+            }
+        }
     }
 }
 
