@@ -25,29 +25,29 @@ pids = []
 
 node ("linux") {
 
-    stage name: 'Reading Manifest'
-    step([$class: 'CopyArtifact', filter: manifestFileName, projectName: manifestLocation, selector: [$class: 'StatusBuildSelector', stable: false]])
-    sh "mv manifest targetmanifest"
-    requiredVersions = readPropertiesFromFile("targetmanifest")
+    stage('Reading Manifest') {
+        step([$class: 'CopyArtifact', filter: manifestFileName, projectName: manifestLocation, selector: [$class: 'StatusBuildSelector', stable: false]])
+        sh "mv manifest targetmanifest"
+        requiredVersions = readPropertiesFromFile("targetmanifest")
 
-    try {
-        step([$class: 'CopyArtifact', filter: manifestFileName, projectName:env.JOB_NAME, selector: [$class: 'StatusBuildSelector', stable: false]])
-        sh "mv manifest currentmanifest"
-        currentVersions = readPropertiesFromFile("currentmanifest")
-    } catch (Exception e) {
-        echo e.toString()
-        currentVersions = new Properties()
+        try {
+            step([$class: 'CopyArtifact', filter: manifestFileName, projectName:env.JOB_NAME, selector: [$class: 'StatusBuildSelector', stable: false]])
+            sh "mv manifest currentmanifest"
+            currentVersions = readPropertiesFromFile("currentmanifest")
+        } catch (Exception e) {
+            echo e.toString()
+            currentVersions = new Properties()
+        }
     }
 
-    stage name: 'Determining Updated Apps'
+    stage('Determining Updated Apps') {
 
-    updatedVersions = compareVersions( requiredVersions, currentVersions)
-    //appsToUpdate=updatedVersions.stringPropertyNames().toArray()
-    
-    appsToUpdate=requiredVersions.stringPropertyNames().toArray()
+        updatedVersions = compareVersions( requiredVersions, currentVersions)
+
+        appsToUpdate=requiredVersions.stringPropertyNames().toArray()
+    }
 }    
-    stage name: 'Updating Apps'
-    checkpoint 'Starting App Update'
+stage('Updating Apps') {
 
     if (appsToUpdate.size()>0) {
         log "Update Apps", "The following apps require updating: ${appsToUpdate.toString()}"
@@ -64,16 +64,16 @@ node ("linux") {
         parallel branches
     }
     
-node ("linux") {    
-    writePropertiesFile(requiredVersions, "manifest")
-    archive 'manifest'
-    writePropertiesFile(updatedVersions, "updates")
-    archive 'updates'
+    node ("linux") {    
+        writePropertiesFile(requiredVersions, "manifest")
+        archive 'manifest'
+        writePropertiesFile(updatedVersions, "updates")
+        archive 'updates'
+    }
 }
 
 
 stage concurrency: 1, name: 'Perform Tests'
-checkpoint 'Starting Tests'
 performNFT()
 
 input 'Kill running servers?'
