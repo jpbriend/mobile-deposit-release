@@ -8,7 +8,7 @@ if (revision=="") {
     error 'No revision specified'
 }
 
-log "Received update", "$app:$revision"
+// log "Received update", "$app:$revision"
 
 node("linux") {
     stage('Reading Manifest') {
