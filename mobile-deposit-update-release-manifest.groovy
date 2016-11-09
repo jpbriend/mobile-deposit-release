@@ -22,6 +22,7 @@ node("linux") {
         }
     }
     stage('Merging Manifest') {
+        sh "echo 'Merging the manifest with the new versions'"
         versions[app]=revision
     }
 
